@@ -1,0 +1,36 @@
+{
+  "name": "open-wabot",
+  "version": "1.0.0",
+  "description": "WhatsApp Bot",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node controller.js",
+    "test": "node test.js",
+    "install:mongo": "npm install baileys-mongodb mongodb",
+    "install:sqlite": "npm install sqlite3",
+    "install:firebase": "npm install baileys-firebase",
+    "install:plugins": "npm install bot-plugins",
+    "install:db": "npm install mongodb sqlite3"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.8",
+    "@hapi/boom": "^10.0.1",
+    "pino": "^8.19.0",
+    "pino-pretty": "^10.3.1",
+    "qrcode-terminal": "^0.12.0",
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12",
+    "syntax-error": "^1.4.0",
+    "performance-now": "^2.1.0",
+    "emoji-regex": "^10.3.0",
+    "file-type": "^18.7.0",
+    "node-telegram-bot-api": "^0.66.0",
+    "mongodb": "^6.3.0",
+    "sqlite3": "^5.1.6"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
