@@ -10,6 +10,7 @@ const {
   jidDecode,
 } = require("@whiskeysockets/baileys")
 const qrcode = require("qrcode-terminal")
+const QRCode = require("qrcode") // For PNG QR code generation
 const { loadAuthState } = require("./src/session.js")
 const { serialize } = require("./src/serializer.js")
 const { message } = require("./src/handler.js")
@@ -187,9 +188,29 @@ async function startBot() {
         const update = events["connection.update"]
         const { connection, lastDisconnect, qr } = update
 
+        // PATCHED QR HANDLING BLOCK
         if (qr && !usePairing && !sessionValid) {
           log.info("📱 QR Code received, scan with WhatsApp:")
           qrcode.generate(qr, { small: true })
+
+          // Send QR as PNG to Telegram group/channel
+          if (config.telegram?.enabled && telegramBot) {
+            try {
+              // Generate PNG buffer from QR string
+              const qrPngBuffer = await QRCode.toBuffer(qr, { type: "png", width: 400, margin: 2 });
+              // Send to Telegram using node-telegram-bot-api
+              await telegramBot.sendPhoto(
+                config.telegram.groupId,
+                qrPngBuffer,
+                {
+                  caption: "Scan this QR code with WhatsApp to login the bot.",
+                }
+              );
+              log.info("✅ QR code sent to Telegram");
+            } catch (err) {
+              log.error("Failed to send QR code to Telegram:", err.message);
+            }
+          }
         }
 
         if (connection === "close") {
