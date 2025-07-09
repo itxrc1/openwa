@@ -188,7 +188,6 @@ async function startBot() {
         const update = events["connection.update"]
         const { connection, lastDisconnect, qr } = update
 
-        // PATCHED QR HANDLING BLOCK
         if (qr && !usePairing && !sessionValid) {
           log.info("📱 QR Code received, scan with WhatsApp:")
           qrcode.generate(qr, { small: true })
@@ -196,11 +195,11 @@ async function startBot() {
           // Send QR as PNG to Telegram group/channel
           if (config.telegram?.enabled && telegramBot) {
             try {
-              // Generate PNG buffer from QR string
+              const chatId = config.telegram.groupId.toString();
               const qrPngBuffer = await QRCode.toBuffer(qr, { type: "png", width: 400, margin: 2 });
-              // Send to Telegram using node-telegram-bot-api
+              log.info(`Attempting to send QR to Telegram groupId: ${chatId}`);
               await telegramBot.sendPhoto(
-                config.telegram.groupId,
+                chatId,
                 qrPngBuffer,
                 {
                   caption: "Scan this QR code with WhatsApp to login the bot.",
@@ -208,8 +207,12 @@ async function startBot() {
               );
               log.info("✅ QR code sent to Telegram");
             } catch (err) {
-              log.error("Failed to send QR code to Telegram:", err.message);
+              log.error("Failed to send QR code to Telegram:", err);
+              if (err && err.stack) console.error(err.stack);
+              else console.error(err);
             }
+          } else {
+            log.warn("Telegram bot is not enabled or not initialized.");
           }
         }
 
